@@ -5,18 +5,24 @@ import socket, sys, re
 sys.path.append("../lib")       # for params
 import params
 
+#encoding file name and contents into a byte array
 def get_bytes_from_file(filename):
-    arr = [len(filename)]
-    arr.extend(filename.encode())
+    arr = [bin(len(filename))]
+    for i in filename.encode():
+        arr.append(bin(i))
 
-    arr.append(len(open(filename, "rb").read()))
-    arr.extend(open(filename, "rb").read())
+    arr.append(bin(len(open(filename, "rb").read())))
+    for i in open(filename, "rb").read():
+        arr.append(bin(i))
     return arr
 
 def bytes_to_file(arr):
-    filename = bytearray(arr[1:arr[0]+1]).decode()
+    filename = ""
+    for i in arr[1:int(arr[0],2)+1]:
+        filename += chr(int(i,2))
     f = open("out.txt", "w")
-    f.write(bytearray(arr[arr[0]+2:]).decode())
+    for i in arr[int(arr[0],2) + 2:]:
+        f.write(chr(int(i,2)))
 
 switchesVarDefaults = (
     (('-s', '--server'), 'server', "127.0.0.1:50001"),
@@ -64,8 +70,9 @@ if s is None:
     sys.exit(1)
 
 byte_arr = get_bytes_from_file("test.txt")
+outMessage = []
 for i in byte_arr:
-    outMessage = i
+    outMessage.append(int(i,2))
 
 while outMessage:
     print("sending '%s'" % outMessage.decode())

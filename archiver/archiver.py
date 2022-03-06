@@ -1,22 +1,25 @@
 #encoding file name and contents into a byte array
 def get_bytes_from_file(filename):
-    arr = [len(filename)]
-    arr.extend(filename.encode())
+    arr = [bin(len(filename))]
+    for i in filename.encode():
+        arr.append(bin(i))
 
-    arr.append(len(open(filename, "rb").read()))
-    arr.extend(open(filename, "rb").read())
+    arr.append(bin(len(open(filename, "rb").read())))
+    for i in open(filename, "rb").read():
+        arr.append(bin(i))
+    print(int(arr[6],2))
     return arr
 
 def bytes_to_file(arr):
-    filename = bytearray(arr[1:arr[0]+1]).decode()
+    filename = ""
+    for i in arr[1:int(arr[0],2)+1]:
+        filename += chr(int(i,2))
     f = open("out.txt", "w")
-    f.write(bytearray(arr[arr[0]+2:]).decode())
+    for i in arr[int(arr[0],2) + 2:]:
+        f.write(chr(int(i,2)))
 
 
 byte_arr = get_bytes_from_file("test.txt")
 bytes_to_file(byte_arr)
-byte = bytearray([116, 101, 115, 116, 46, 116, 120, 116])
-lst = [1,2,3,4,5,6,7,8,9]
-print(lst[3+1:])
 
 
