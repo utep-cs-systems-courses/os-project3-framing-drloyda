@@ -66,7 +66,8 @@ if s is None:
 byte_arr = get_bytes_from_file("test.txt")
 for i in byte_arr:
     outMessage = i
-while len(outMessage):
+
+while outMessage:
     print("sending '%s'" % outMessage.decode())
     bytesSent = s.send(outMessage)
     outMessage = outMessage[bytesSent:]
