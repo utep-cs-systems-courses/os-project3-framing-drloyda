@@ -70,12 +70,14 @@ if s is None:
     sys.exit(1)
 
 byte_arr = get_bytes_from_file("test.txt")
-outMessage = []
-for i in byte_arr:
-    outMessage.append(int(i,2))
 
+
+message = []
+for i in byte_arr[int(byte_arr[0],2) + 2:]:
+    message.append(int(i,2))
+outMessage = bytearray(message).decode()
 while outMessage:
-    print("sending '%s'" % outMessage.decode())
+    print("sending '%s'" % outMessage)
     bytesSent = s.send(outMessage)
     outMessage = outMessage[bytesSent:]
 

@@ -7,7 +7,11 @@ def get_bytes_from_file(filename):
     arr.append(bin(len(open(filename, "rb").read())))
     for i in open(filename, "rb").read():
         arr.append(bin(i))
-    print(int(arr[6],2))
+    print(arr)
+    lst = []
+    for i in arr[int(arr[0],2) + 2:]:
+        lst.append(int(i,2))
+    print(bytearray(lst).decode())
     return arr
 
 def bytes_to_file(arr):
