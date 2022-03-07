@@ -75,9 +75,10 @@ byte_arr = get_bytes_from_file("test.txt")
 message = []
 for i in byte_arr[int(byte_arr[0],2) + 2:]:
     message.append(int(i,2))
-outMessage = bytearray(message).decode()
+    
+outMessage = bytearray(message)
 while outMessage:
-    print("sending '%s'" % outMessage)
+    print("sending '%s'" % outMessage.decode())
     bytesSent = s.send(outMessage)
     outMessage = outMessage[bytesSent:]
 
