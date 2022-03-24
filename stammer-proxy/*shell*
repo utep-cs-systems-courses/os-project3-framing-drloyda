@@ -1,0 +1,13 @@
+student@systems-vm:~/Projects/os-project3-framing-drloyda/stammer-proxy> cd..
+student@systems-vm:~/Projects/os-project3-framing-drloyda> cd archiver
+student@systems-vm:~/Projects/os-project3-framing-drloyda/archiver> python3 Client.py -s 127.0.0.1:50000
+creating sock: af=2, type=1, proto=6
+ attempting to connect to ('127.0.0.1', 50000)
+sending 'my dog is happy'
+Received 'Echoing my dog is'
+Received ' hEchoing app'
+Received 'Ech'
+Received 'oing y'
+Received ''
+Zero length read.  Closing
+student@systems-vm:~/Projects/os-project3-framing-drloyda/archiver> 
