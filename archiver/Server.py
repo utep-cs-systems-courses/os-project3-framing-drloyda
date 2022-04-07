@@ -11,8 +11,6 @@ switchesVarDefaults = (
     (('-?', '--usage'), "usage", False), # boolean (set if present)
     )
 
-
-
 progname = "echoserver"
 paramMap = params.parseParams(switchesVarDefaults)
 
@@ -39,6 +37,7 @@ while 1:
     while len(sendMsg):
         bytesSent = conn.send(sendMsg)
         sendMsg = sendMsg[bytesSent:0]
+        
 conn.shutdown(socket.SHUT_WR)
 conn.close()
 
