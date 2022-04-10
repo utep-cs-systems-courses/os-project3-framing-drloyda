@@ -52,7 +52,6 @@ bytesSent = s.send(outMessage)
 
 data = s.recv(1024).decode()
 print("Received '%s'" % data)
-
 s.shutdown(socket.SHUT_WR)      # no more output
 #while 1:
  #   data = s.recv(1024).decode()
