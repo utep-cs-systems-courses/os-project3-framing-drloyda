@@ -1,5 +1,6 @@
-import socket, sys, re
-#encoding file name and contents into a byte array
+import socket
+
+#functions to archive and unarchive files
 def archive(filename):
     arr = bytearray()
     arr.append((len(filename)))
@@ -15,50 +16,43 @@ def un_archive(filename, b):
     with open(filename, "wb") as f:
         f.write(b)
 
+#setting up client-host info
+client_socket = socket.socket()
+host = "127.0.0.1"
+port = 50001
 
-server_host = "127.0.0.1"
-server_port= 50001
+#trying to connect to server
+print("waiting for connection")
+try:
+    client_socket.connect((host, port))
 
-s = None
-for res in socket.getaddrinfo(server_host, server_port, socket.AF_UNSPEC, socket.SOCK_STREAM):
-    af, socktype, proto, canonname, sa = res
+except socket.error as e:
+    print(str(e))
+
+#prompt user to transfer a file
+while True:
+    inp = input("Type name of file you want to transfer:")
     try:
-        s = socket.socket(af, socktype, proto)
-    except socket.error as msg:
-        print(msg)
-        s = None
+        arch_file = archive(inp)
+
+    #invalid file name
+    except FileNotFoundError:
+        print("File name does not exist")
         continue
-    try:
-        s.connect(sa)
-    except socket.error as msg:
-        print(msg)
-        s.close()
-        s = None
-        continue
-    break
 
-if s is None:
-    print('could not open socket')
-    sys.exit(1)
+    #send archived file to server
+    client_socket.send(arch_file)
+    response = client_socket.recv(1024)
 
-#archiving the file as a byte array
-byte_arr = archive("test.txt")
-#sending contents of the file
-outMessage = byte_arr[byte_arr[0]+1:]
-#while outMessage:
-print("sending '%s'" % outMessage.decode())
-bytesSent = s.send(outMessage)
- #   outMessage = outMessage[bytesSent:]
+    #if server sent back that file already exists
+    #ask user to rename file
+    if response.decode() == "failed":
+        name = inp
+        while name == inp:
+            print("This filename already exists.")
+            name = input("Please rename the file: ")
+        client_socket.send(str.encode(name))
 
-data = s.recv(1024).decode()
-print("Received '%s'" % data)
-s.shutdown(socket.SHUT_WR)      # no more output
-#while 1:
- #   data = s.recv(1024).decode()
-  #  print("Received '%s'" % data)
-   # if len(data) == 0:
-    #    break;    
-s.close()
-
-    
-    
+        
+    print("File:" + inp + " Transferred sucessfully!")
+client_socket.close()

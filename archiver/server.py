@@ -5,7 +5,6 @@ from _thread import *
 
 class thread(threading.Thread):
     def __init__(self, thread_name, thread_ID):
-
         threading.Thread.__init__(self)
         self.thread_name = thread_name
         self.thread_ID = thread_ID
@@ -14,43 +13,59 @@ class thread(threading.Thread):
     def run(self):
         print(str(self.thread_name) +" "+ str(self.thread_ID));
 
-server_socket = socket.socket()
+        
+def un_archive(filename, b):
+    b = b[b[0] + 1:]
+    with open(filename, "wb") as f:
+        f.write(b)
 
+files = set()
+
+#setting up server info
+server_socket = socket.socket()
 host = "127.0.0.1"
 port = 50001
 
-thread_count = 0
-
+#trying to connect with the port
 try:
     server_socket.bind((host, port))
 
 except socket.error as e:
     print(str(e))
 
-
+#listen for client connections
 print("Waiting for connection.")
 server_socket.listen(5)
 
-
-def threaded_client(connection):
-    connection.send(str.encode("Welcome to server"))
+#method that recieves file from client and uploads it
+def client_thread(server):
     while True:
-        data = connection.recv(1024)
-        reply = "Server sent back: " + data.decode()
+        data = server.recv(1024)
 
+        filename = "upload-"+ data[1:data[0]+1].decode()
+    
+        
+        if filename in files:
+            print("failed!")
+            server.send(str.encode("failed"))
+            name = "upload-" + server.recv(1024).decode()
+            un_archive(name, data)
+            continue
+        
+        files.add(filename)     
+        un_archive(filename, data)
+        
         if not data:
             break
-        connection.sendall(str.encode(reply))
-    connection.close()
+        
+        server.send(str.encode("success"))
+    server.close()
 
+#creates a new thread to run whenever a client connects
 while True:
     Client, address = server_socket.accept()
     print("Connected as:" + address[0] + ":" + str(address[1]))
-    start_new_thread(threaded_client, (Client,))
-    #new_thread = thread(threaded_client,(Client,))
-    #new_thread.start()
-    thread_count += 1
-    print("Thread number:" + str(thread_count))
+    start_new_thread(client_thread, (Client,))
+                    
 server_socket.close()
-    
         
